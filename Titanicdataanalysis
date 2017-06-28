@@ -1,0 +1,23 @@
+Titanic = load 'TitanicData.txt' using PigStorage(',')as(PassengerId:int,Survived:int,Pclass:int,Name:chararray,Sex:chararray,
+Age:int,SibSp:int,Parch:int,Ticket:chararray,Fare:float,Cabin:chararray,
+Embarked:chararray);
+
+
+1. Titanicgroup = GROUP Titanic by Pclass;
+   TitanicAvg = FOREACH Titanicgroup GENERATE Titanic.Pclass, AVG(Titanic.Fare);
+   dump TitanicAvg;
+
+2. 
+   Filtertitanic = FILTER Titanic BY Survived == 1 AND Embarked == 'S' ;
+   Titanicgroup2 = GROUP Filtertitanic by ALL;
+   TitanicCOUNT = FOREACH Titanicgroup2 GENERATE COUNT(Filtertitanic);
+   
+   
+3 .Filtertitanicdied = FILTER Titanic BY Survived == 0;
+   Filtermale = FILTER Filtertitanicdied BY Sex == 'male';
+   Filterfemale = FILTER Filtertitanicdied BY Sex == 'female';
+   Filtermalegroup = GROUP Filtermale by Sex;
+   Filterfemalegroup = GROUP Filterfemale by Sex;
+   Titanicmalecount = FOREACH Filtermalegroup GENERATE COUNT(Filtermale);
+   Titanicfemalecount = FOREACH Filterfemalegroup GENERATE COUNT(Filterfemale);
+   
